@@ -2,15 +2,11 @@ import React from 'react';
 import MaterialTitlePanel from './material_title_panel';
 import PropTypes from 'prop-types';
 const fs = require('fs');
-const patientFolder = '../assets/data/openface/';
+const patientFolder = 'src/assets/data/openface';
 
 console.log(patientFolder);
-fs.readdir(patientFolder, (err, files) => {
-  console.log(err);
-  files.forEach(file => {
-    console.log(file);
-  });
-})
+console.log(process.cwd())
+
 
 const styles = {
   sidebar: {
@@ -51,11 +47,15 @@ const SidebarContent = (props) => {
     props.callbackParent(onClicked); // we notify our parent
 
   }
-
-  for (let ind = 0; ind < 10; ind++) {
+  fs.readdirSync(patientFolder).forEach(file => {
+    console.log("Patient " + file);
     links.push(
-      <a key={ind} onClick={() => btnClick(ind)} style={styles.sidebarLink}>Patient {ind}</a>);
-  }
+      <a key={file} onClick={() => btnClick(file)} style={styles.sidebarLink}>Patient {file}</a>);
+
+  })
+
+  console.log(links);
+
 
   return (
     <MaterialTitlePanel title="Patients" style={style}>
