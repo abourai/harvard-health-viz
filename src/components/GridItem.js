@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import PropTypes from 'prop-types';
 
 const style = {
 
@@ -21,19 +22,36 @@ const style = {
     color: '#757575',
   },
 
+  green: {
+    color: '#006600',
+  },
+
+  red: {
+    color: '#8f0000',
+  },
+
 
 
 };
+
+const featureMap = {
+  'brow_lower_expressivity': 'Brow Lower Expressivity',
+  'brow_raise_expressivity': 'Brow Raiser Expressivity',
+  'overall_expressivity': 'Overall Expressivity',
+  'smile_intensity': 'Smile Intensity',
+  'smile_length': 'Smile Length',
+}
 
 
 class GridItem extends React.Component {
 
   static get propTypes() {
     return {
-      feaure: React.PropTypes.string,
-      value: React.PropTypes.number,
-      deltaMean: React.PropTypes.string,
-      deltaLast: React.PropTypes.string,
+      feaure: PropTypes.string,
+      value: PropTypes.number,
+      deltaMean: PropTypes.number,
+      deltaLast: PropTypes.number,
+      deltaFirst: PropTypes.number
     };
   }
 
@@ -41,13 +59,12 @@ class GridItem extends React.Component {
     return(
       <div style={style.square} className='square'>
         <h3 >
-          {this.props.feature}
+          {featureMap[this.props.feature]}
         </h3>
-          Patient: {this.props.value}
-          <br />
-          Mean: {this.props.deltaMean}
-          <br />
-          Last Visit: {this.props.deltaLast}
+          <h5>Patient:</h5> <p>{this.props.value}</p>
+          <h5>Deviation from Mean:</h5>  <p style={this.props.deltaMean > 0 ? style.green : style.red}>{this.props.deltaMean}</p>
+          <h5>Deviation from Last Visit:</h5>  <p style={this.props.deltaLast > 0 ? style.green : style.red}>{this.props.deltaLast}</p>
+          <h5>Deviation from First Visit: </h5> <p style={this.props.deltaFirst > 0 ? style.green : style.red}>{this.props.deltaFirst}</p>
       </div>
     );
   }

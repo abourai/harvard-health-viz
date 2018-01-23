@@ -7,7 +7,8 @@ import SidebarContent from './sidebar_content';
 import LineExample from './line_example';
 import VideoSelector from './select_video';
 import Button from 'muicss/lib/react/button';
-
+import Summary from './Summary'
+const {ipcRenderer} = require('electron')
 
 const styles = {
   contentHeaderMenuLink: {
@@ -35,7 +36,10 @@ class Home extends React.Component {
       mql: mql,
       docked: false,
       open: false,
-      patient: false,
+      patient_selected: false,
+      patient_id: null,
+      patientMeans: null,
+      patientMeansLoaded: false,
       showDataForm: false,
     };
 
@@ -43,10 +47,12 @@ class Home extends React.Component {
     this.toggleOpen = this.toggleOpen.bind(this);
     this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
     this.onAddNewData = this.onAddNewData.bind(this);
+    this.requestMeans = this.requestMeans.bind(this);
   }
 
   componentWillMount() {
     mql.addListener(this.mediaQueryChanged);
+    this.requestMeans();
     this.setState({mql: mql, docked: mql.matches});
   }
 
@@ -69,6 +75,17 @@ class Home extends React.Component {
     });
   }
 
+  requestMeans() {
+    ipcRenderer.send('asynchronous-message', ['get_means', 'visual'])
+
+    ipcRenderer.on('asynchronous-reply', (event, arg) => {
+      this.setState({
+        patientMeans: arg,
+        patientMeansLoaded: true,
+      });
+    })
+  }
+
   toggleOpen(ev) {
     this.setState({open: !this.state.open});
 
@@ -77,12 +94,15 @@ class Home extends React.Component {
     }
   }
 
-  onChildClicked(newState) {
-    this.setState({patient: newState});
+  onChildClicked(newState, patient_id) {
+    this.setState({
+      patient_selected: newState,
+      patient_id,
+    });
   }
 
   render() {
-    const sidebar = <SidebarContent callbackParent={(newState) => this.onChildClicked(newState)}/>;
+    const sidebar = <SidebarContent callbackParent={(newState, patient_id) => this.onChildClicked(newState, patient_id)}/>;
 
     const contentHeader = (
       <span>
@@ -113,15 +133,14 @@ class Home extends React.Component {
     );
 
 
-    if (this.state.patient) {
+    if (this.state.patient_selected && this.state.patientMeansLoaded) {
       return (
-        <div>
+        <div style={styles.content}>
           <Sidebar {...sidebarProps}>
             <MaterialTitlePanel title={contentHeader}>
-              // <LineExample />
-              // {/*  */}
-            </MaterialTitlePanel>
 
+            </MaterialTitlePanel>
+            <Summary patientID={this.state.patient_id} means={this.state.patientMeans}/>
           </Sidebar>
         </div>
 

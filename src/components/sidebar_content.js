@@ -42,19 +42,16 @@ const SidebarContent = (props) => {
 
   const btnClick = (obj) => {
     const onClicked = !clicked;
-    alert('---'+obj);
-    console.log(props);
-    props.callbackParent(onClicked); // we notify our parent
+    props.callbackParent(onClicked, obj); // we notify our parent
 
   }
   fs.readdirSync(patientFolder).forEach(file => {
-    console.log("Patient " + file);
+    // console.log("Patient " + file);
     links.push(
       <a key={file} onClick={() => btnClick(file)} style={styles.sidebarLink}>Patient {file}</a>);
 
   })
 
-  console.log(links);
 
 
   return (

@@ -21,7 +21,6 @@ class VideoSelector extends React.Component {
     this.selectFilePath = this.selectFilePath.bind(this);
     this.useSelectedFile = this.useSelectedFile.bind(this);
     this.handleUserInput = this.handleUserInput.bind(this);
-
   }
 
   componentWillMount() {
@@ -34,8 +33,6 @@ class VideoSelector extends React.Component {
     const target = event.target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
     const name = target.name;
-    console.log(event.target.checked);
-    runScript();
     this.setState({
       [name]: value,
     });
@@ -47,19 +44,14 @@ class VideoSelector extends React.Component {
   }
 
   useSelectedFile() {
-    console.log(this.fileInput.files[0]);
-
     ipcRenderer.on('asynchronous-reply', (event, arg) => {
       console.log('script is running!') // confirmation that the shell script was executed
     })
-    ipcRenderer.send('asynchronous-message', 'take your time')
+    ipcRenderer.send('asynchronous-message', ['run_script', 'second arg'])
   }
 
-
   render() {
-
     return (
-
       <Form>
         <legend>Analyze new session</legend>
         <Input name="patientId" label="Patient ID (required)" value={this.state.patientId} required={true} onChange={this.handleUserInput}/>
@@ -68,9 +60,7 @@ class VideoSelector extends React.Component {
         <Checkbox name="runAudioAnalysis" value={this.state.runAudioAnalysis} label="Run Speech Analyses" onChange={this.handleUserInput}/>
         <Button variant="raised" onClick={this.selectFilePath}>Select Video</Button>
       </Form>
-
     );
-
   }
 }
 

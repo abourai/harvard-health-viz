@@ -21,10 +21,42 @@ def write_metrics_to_JSON(patient_id, patient_file, patient_summary):
         json.dump(patient_summary, write_to_this_file)
     return
 
-def generate_means():
+def generate_means(openface_output):
     """
     Generates means for important features for comparisons
+
+    brow_lower_expressivity
+    brow_raise_expressivity
+    overall_expressivity
+    smile_intensity
+    smile_length
     """
+
+    patient_means_outfile = 'means.json'
+    patient_means = defaultdict(float);
+    total_data_points = 0
+
+    for root, dirs, files in os.walk(openface_output):
+        for f in files:
+
+            if f.endswith('.json'):
+                f = open(os.path.join(root, f))
+                patient_data = json.load(f)
+                for visit_date in patient_data:
+                    total_data_points += 1
+                    data_at_date = patient_data[visit_date]
+
+                    for feature in data_at_date:
+                        patient_means[feature] += data_at_date[feature]
+
+
+
+    for feature in patient_means:
+        patient_means[feature] = patient_means[feature] / total_data_points
+
+    with open(patient_means_outfile, 'w') as write_to_this_file:
+        json.dump(patient_means, write_to_this_file)
+
     return
 
 def generate_dynamic_metrics_from_raw_output():
@@ -150,8 +182,8 @@ def generate_summary_metrics_from_raw_output(patient_id):
 
 def main(args):
     openface_output = os.path.abspath(os.path.join(os.getcwd(), 'openface'))
-    generate_summary_metrics_from_raw_output(args[1])
-
+    #generate_summary_metrics_from_raw_output(args[1])
+    generate_means(openface_output)
     return
 
 
